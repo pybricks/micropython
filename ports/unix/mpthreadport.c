@@ -191,6 +191,12 @@ void mp_thread_set_state(mp_state_thread_t *state) {
     pthread_setspecific(tls_key, state);
 }
 
+#if MICROPY_CPYTHON_COMPAT
+mp_uint_t mp_thread_get_id(void) {
+    return pthread_self();
+}
+#endif
+
 void mp_thread_start(void) {
     // enable realtime priority if `-X realtime` command line parameter was set
     #if defined(__APPLE__)
@@ -210,7 +216,12 @@ void mp_thread_start(void) {
     mp_thread_unix_end_atomic_section();
 }
 
-void mp_thread_create(void *(*entry)(void *), void *arg, size_t *stack_size) {
+#if MICROPY_CPYTHON_COMPAT
+mp_uint_t
+#else
+void
+#endif
+mp_thread_create(void *(*entry)(void *), void *arg, size_t *stack_size) {
     // default stack size is 8k machine-words
     if (*stack_size == 0) {
         *stack_size = 8192 * sizeof(void *);
@@ -265,7 +276,12 @@ void mp_thread_create(void *(*entry)(void *), void *arg, size_t *stack_size) {
 
     mp_thread_unix_end_atomic_section();
 
+    #if MICROPY_CPYTHON_COMPAT
+    MP_STATIC_ASSERT(sizeof(mp_uint_t) == sizeof(pthread_t));
+    return id;
+    #else
     return;
+    #endif
 
 er:
     mp_raise_OSError(ret);
