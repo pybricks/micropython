@@ -235,7 +235,7 @@ void mp_handle_pending(bool raise_exc) {
 
     // Handle any pending callbacks.
     #if MICROPY_ENABLE_SCHEDULER
-    if (MP_STATE_VM(sched_state) == MP_SCHED_PENDING) {
+    if (MP_STATE_IS_MAIN_THREAD && MP_STATE_VM(sched_state) == MP_SCHED_PENDING) {
         mp_sched_run_pending();
     }
     #endif
