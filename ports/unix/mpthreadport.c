@@ -31,6 +31,7 @@
 #include "py/runtime.h"
 #include "py/mpthread.h"
 #include "py/gc.h"
+#include "py/obj.h"
 
 #if MICROPY_PY_THREAD
 
@@ -61,8 +62,8 @@
 // this structure forms a linked list, one node per active thread
 typedef struct _mp_thread_t {
     pthread_t id;           // system id of thread
-    int ready;              // whether the thread is ready and running
     void *arg;              // thread Python args, a GC root pointer
+    mp_state_thread_t *ts;  // only set when thread is ready and running
     struct _mp_thread_t *next;
 } mp_thread_t;
 
@@ -136,8 +137,8 @@ void mp_thread_init(void) {
     // create first entry in linked list of all threads
     thread = malloc(sizeof(mp_thread_t));
     thread->id = pthread_self();
-    thread->ready = 1;
     thread->arg = NULL;
+    thread->ts = &mp_state_ctx.thread;
     thread->next = NULL;
 
     #if defined(__APPLE__)
@@ -197,7 +198,8 @@ void mp_thread_gc_others(void) {
         if (th->id == pthread_self()) {
             continue;
         }
-        if (!th->ready) {
+        if (!th->ts) {
+            // not running yet
             continue;
         }
         pthread_kill(th->id, MP_THREAD_GC_SIGNAL);
@@ -222,6 +224,22 @@ mp_uint_t mp_thread_get_id(void) {
     return (mp_uint_t)pthread_self();
 }
 
+mp_int_t mp_thread_schedule_exception(mp_uint_t thread_id, mp_obj_t ex) {
+    mp_int_t count = 0;
+    pthread_mutex_lock(&thread_mutex);
+    for (mp_thread_t *th = thread; th != NULL; th = th->next) {
+        if (th->id == thread_id) {
+            if (!th->ts) {
+                continue;
+            }
+            th->ts->mp_pending_exception = ex;
+            count++;
+        }
+    }
+    pthread_mutex_unlock(&thread_mutex);
+    return count;
+}
+
 void mp_thread_start(void) {
     // enable realtime priority if `-X realtime` command line parameter was set
     #if defined(__APPLE__)
@@ -236,7 +254,7 @@ void mp_thread_start(void) {
     mp_thread_unix_begin_atomic_section();
     for (mp_thread_t *th = thread; th != NULL; th = th->next) {
         if (th->id == pthread_self()) {
-            th->ready = 1;
+            th->ts = mp_thread_get_state();
             break;
         }
     }
@@ -291,8 +309,8 @@ mp_uint_t mp_thread_create(void *(*entry)(void *), void *arg, size_t *stack_size
     // add thread to linked list of all threads
     mp_thread_t *th = malloc(sizeof(mp_thread_t));
     th->id = id;
-    th->ready = 0;
     th->arg = arg;
+    th->ts = NULL;
     th->next = thread;
     thread = th;
 
