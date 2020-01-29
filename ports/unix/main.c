@@ -491,6 +491,12 @@ MP_NOINLINE int main_(int argc, char **argv) {
     #endif
     mp_stack_set_limit(stack_limit);
 
+    if (getenv("PYBRICKS_NO_REDIRECT_STDOUT") == NULL) {
+        if (dup2(STDERR_FILENO, STDOUT_FILENO) == -1) {
+            perror("Failed to redirect stdout to stderr");
+        }
+    }
+
     pre_process_options(argc, argv);
 
     #if MICROPY_ENABLE_GC
