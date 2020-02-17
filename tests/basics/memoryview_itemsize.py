@@ -1,3 +1,15 @@
+
+try:
+    import uos
+except ImportError:
+    import os as uos
+
+if uos.getenv('PYBRICKS_BUILD_ENV') == 'docker-armel':
+    # host python pointer size is different from target pointer size
+    print('SKIP')
+    raise SystemExit
+
+
 try:
     memoryview(b'a').itemsize
 except:
