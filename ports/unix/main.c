@@ -92,6 +92,12 @@ const mp_print_t mp_stderr_print = {NULL, stderr_print_strn};
 // and lower 8 bits are SystemExit value. For all other exceptions,
 // return 1.
 static int handle_uncaught_exception(mp_obj_base_t *exc) {
+    // Pybricks hack to stop motors and sound when there is an unhandled exception
+    #if PYBRICKS_HUB_EV3BRICK
+    extern void pybricks_unhandled_exception();
+    pybricks_unhandled_exception();
+    #endif
+
     // check for SystemExit
     if (mp_obj_is_subclass_fast(MP_OBJ_FROM_PTR(exc->type), MP_OBJ_FROM_PTR(&mp_type_SystemExit))) {
         // None is an exit value of 0; an int is its value; anything else is 1
