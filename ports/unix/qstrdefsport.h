@@ -25,3 +25,7 @@
  */
 
 // *FORMAT-OFF*
+
+#ifdef MICROPY_VARIANT_QSTR_DEFS_H
+#include MICROPY_VARIANT_QSTR_DEFS_H
+#endif
