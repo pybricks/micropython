@@ -201,7 +201,7 @@ qstr qstr_from_str(const char *str) {
     return qstr_from_strn(str, strlen(str));
 }
 
-qstr qstr_from_strn(const char *str, size_t len) {
+STATIC qstr qstr_from_strn_helper(const char *str, size_t len, bool is_static) {
     QSTR_ENTER();
     qstr q = qstr_find_strn(str, len);
     if (q == 0) {
@@ -213,45 +213,52 @@ qstr qstr_from_strn(const char *str, size_t len) {
             mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("name too long"));
         }
 
-        // compute number of bytes needed to intern this string
-        size_t n_bytes = len + 1;
+        if (is_static) {
+            assert(str[len] == '\0');
+        } else {
+            // compute number of bytes needed to intern this string
+            size_t n_bytes = len + 1;
 
-        if (MP_STATE_VM(qstr_last_chunk) != NULL && MP_STATE_VM(qstr_last_used) + n_bytes > MP_STATE_VM(qstr_last_alloc)) {
-            // not enough room at end of previously interned string so try to grow
-            char *new_p = m_renew_maybe(char, MP_STATE_VM(qstr_last_chunk), MP_STATE_VM(qstr_last_alloc), MP_STATE_VM(qstr_last_alloc) + n_bytes, false);
-            if (new_p == NULL) {
-                // could not grow existing memory; shrink it to fit previous
-                (void)m_renew_maybe(char, MP_STATE_VM(qstr_last_chunk), MP_STATE_VM(qstr_last_alloc), MP_STATE_VM(qstr_last_used), false);
-                MP_STATE_VM(qstr_last_chunk) = NULL;
-            } else {
-                // could grow existing memory
-                MP_STATE_VM(qstr_last_alloc) += n_bytes;
-            }
-        }
-
-        if (MP_STATE_VM(qstr_last_chunk) == NULL) {
-            // no existing memory for the interned string so allocate a new chunk
-            size_t al = n_bytes;
-            if (al < MICROPY_ALLOC_QSTR_CHUNK_INIT) {
-                al = MICROPY_ALLOC_QSTR_CHUNK_INIT;
-            }
-            MP_STATE_VM(qstr_last_chunk) = m_new_maybe(char, al);
-            if (MP_STATE_VM(qstr_last_chunk) == NULL) {
-                // failed to allocate a large chunk so try with exact size
-                MP_STATE_VM(qstr_last_chunk) = m_new_maybe(char, n_bytes);
-                if (MP_STATE_VM(qstr_last_chunk) == NULL) {
-                    QSTR_EXIT();
-                    m_malloc_fail(n_bytes);
+            if (MP_STATE_VM(qstr_last_chunk) != NULL && MP_STATE_VM(qstr_last_used) + n_bytes > MP_STATE_VM(qstr_last_alloc)) {
+                // not enough room at end of previously interned string so try to grow
+                char *new_p = m_renew_maybe(char, MP_STATE_VM(qstr_last_chunk), MP_STATE_VM(qstr_last_alloc), MP_STATE_VM(qstr_last_alloc) + n_bytes, false);
+                if (new_p == NULL) {
+                    // could not grow existing memory; shrink it to fit previous
+                    (void)m_renew_maybe(char, MP_STATE_VM(qstr_last_chunk), MP_STATE_VM(qstr_last_alloc), MP_STATE_VM(qstr_last_used), false);
+                    MP_STATE_VM(qstr_last_chunk) = NULL;
+                } else {
+                    // could grow existing memory
+                    MP_STATE_VM(qstr_last_alloc) += n_bytes;
                 }
-                al = n_bytes;
             }
-            MP_STATE_VM(qstr_last_alloc) = al;
-            MP_STATE_VM(qstr_last_used) = 0;
-        }
 
-        // allocate memory from the chunk for this new interned string's data
-        char *q_ptr = MP_STATE_VM(qstr_last_chunk) + MP_STATE_VM(qstr_last_used);
-        MP_STATE_VM(qstr_last_used) += n_bytes;
+            if (MP_STATE_VM(qstr_last_chunk) == NULL) {
+                // no existing memory for the interned string so allocate a new chunk
+                size_t al = n_bytes;
+                if (al < MICROPY_ALLOC_QSTR_CHUNK_INIT) {
+                    al = MICROPY_ALLOC_QSTR_CHUNK_INIT;
+                }
+                MP_STATE_VM(qstr_last_chunk) = m_new_maybe(char, al);
+                if (MP_STATE_VM(qstr_last_chunk) == NULL) {
+                    // failed to allocate a large chunk so try with exact size
+                    MP_STATE_VM(qstr_last_chunk) = m_new_maybe(char, n_bytes);
+                    if (MP_STATE_VM(qstr_last_chunk) == NULL) {
+                        QSTR_EXIT();
+                        m_malloc_fail(n_bytes);
+                    }
+                    al = n_bytes;
+                }
+                MP_STATE_VM(qstr_last_alloc) = al;
+                MP_STATE_VM(qstr_last_used) = 0;
+            }
+
+            // allocate memory from the chunk for this new interned string's data
+            char *q_ptr = MP_STATE_VM(qstr_last_chunk) + MP_STATE_VM(qstr_last_used);
+            MP_STATE_VM(qstr_last_used) += n_bytes;
+            memcpy(q_ptr, str, len);
+            q_ptr[len] = '\0';
+            str = q_ptr;
+        }
 
         // store the interned strings' data
         size_t hash = qstr_compute_hash((const byte *)str, len);
@@ -261,6 +268,12 @@ qstr qstr_from_strn(const char *str, size_t len) {
     }
     QSTR_EXIT();
     return q;
+}
+qstr qstr_from_strn(const char *str, size_t len) {
+    return qstr_from_strn_helper(str, len, false);
+}
+qstr qstr_from_strn_static(const char *str, size_t len) {
+    return qstr_from_strn_helper(str, len, true);
 }
 
 mp_uint_t qstr_hash(qstr q) {
