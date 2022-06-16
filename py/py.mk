@@ -199,7 +199,11 @@ PY_CORE_O_BASENAME = $(addprefix py/,\
 PY_CORE_O = $(addprefix $(BUILD)/, $(PY_CORE_O_BASENAME))
 
 # this is a convenience variable for ports that want core, extmod and frozen code
-PY_O += $(PY_CORE_O)
+PY_O = $(PY_CORE_O)
+
+ifneq ($(PROG),mpy-cross)
+PY_O += $(PY_EXTMOD_O)
+endif
 
 # object file for frozen code specified via a manifest
 ifneq ($(FROZEN_MANIFEST),)
