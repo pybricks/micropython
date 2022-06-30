@@ -44,23 +44,22 @@ sts
 
 test
 tes
-RuntimeError: 
-RuntimeError: 
+RuntimeError:
+RuntimeError:
 # repl
 ame__
-port 
+port
 
-builtins        micropython     _asyncio        _thread
-array           binascii        btree           cexample
-cmath           collections     cppexample      cryptolib
-deflate         errno           example_package
-ffi             framebuf        gc              hashlib
-heapq           io              json            machine
-marshal         math            os              platform
-random          re              select          socket
-struct          sys             termios         time
-tls             uctypes         vfs             websocket
-me
+builtins        micropython     _thread         _uasyncio
+btree           cexample        cppexample      ffi
+framebuf        gc              termios         uarray
+ubinascii       ucmath          ucollections    ucryptolib
+uctypes         uerrno          uhashlib        uheapq
+uio             ujson           umachine        umath
+uos             urandom         ure             uselect
+usocket         ussl            ustruct         usys
+utime           utimeq          uwebsocket      uzlib
+ime
 
 micropython     machine         marshal         math
 
@@ -97,7 +96,7 @@ TypeError: unsupported types for __divmod__: 'str', 'str'
 2
 OverflowError: overflow converting long int to machine word
 OverflowError: overflow converting long int to machine word
-ValueError: 
+ValueError:
 Warning: test
 # format float
 ?
@@ -119,8 +118,8 @@ unlocked
 1
 2
 3
-KeyboardInterrupt: 
-KeyboardInterrupt: 
+KeyboardInterrupt:
+KeyboardInterrupt:
 10
 # ringbuf
 99 0
