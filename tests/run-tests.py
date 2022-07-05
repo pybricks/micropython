@@ -502,6 +502,10 @@ def run_tests(pyb, tests, args, result_dir, num_threads=1):
         "struct_endian",
     )
 
+    if sys.version_info < (3, 6):
+        # requires Python 3.6 for newline parameter
+        skip_tests.add("extmod/ubinascii_b2a_base64.py")
+
     # Some tests shouldn't be run on GitHub Actions
     if os.getenv("GITHUB_ACTIONS") == "true":
         skip_tests.add("thread/stress_schedule.py")  # has reliability issues
