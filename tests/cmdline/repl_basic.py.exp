@@ -1,4 +1,4 @@
-MicroPython \.\+ version
+########
 Use \.\+
 >>> # basic REPL tests
 >>> print(1)
