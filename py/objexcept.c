@@ -371,6 +371,10 @@ MP_DEFINE_EXCEPTION(Exception, BaseException)
     MP_DEFINE_EXCEPTION(ResourceWarning, Warning)
     */
 
+// Exception that can't be raised or caught by user code, not even with a
+// bare except. Can be used to force MicroPython to exit from C code.
+MP_DEFINE_EXCEPTION(SystemAbort, BaseException)
+
 // *FORMAT-ON*
 
 mp_obj_t mp_obj_new_exception(const mp_obj_type_t *exc_type) {
