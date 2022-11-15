@@ -43,7 +43,7 @@ struct _mp_state_thread_t;
 struct _mp_state_thread_t *mp_thread_get_state(void);
 void mp_thread_set_state(struct _mp_state_thread_t *state);
 #if MICROPY_CPYTHON_COMPAT
-mp_uint_t mp_thread_create(void *(*entry)(void*), void *arg, size_t *stack_size);
+mp_uint_t mp_thread_create(void *(*entry)(void *), void *arg, size_t *stack_size);
 mp_uint_t mp_thread_get_id(void);
 mp_int_t mp_thread_schedule_exception(mp_uint_t thread_id, mp_obj_t ex);
 #else
