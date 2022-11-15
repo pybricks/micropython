@@ -87,7 +87,7 @@ STATIC MP_DEFINE_CONST_DICT(mp_module_ufcntl_globals, mp_module_ufcntl_globals_t
 
 const mp_obj_module_t mp_module_ufcntl = {
     .base = { &mp_type_module },
-    .globals = (mp_obj_dict_t*)&mp_module_ufcntl_globals,
+    .globals = (mp_obj_dict_t *)&mp_module_ufcntl_globals,
 };
 
 #endif // MICROPY_PY_UFCNTL_POSIX

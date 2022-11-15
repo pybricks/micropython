@@ -156,16 +156,16 @@ STATIC mp_obj_t mp_module_ummap_mmap_seek(size_t n_args, const mp_obj_t *args) {
     }
 
     switch (whence) {
-    case SEEK_SET:
-        break;
-    case SEEK_CUR:
-        pos += self->pos;
-        break;
-    case SEEK_END:
-        pos += self->len;
-        break;
-    default:
-        mp_raise_ValueError(MP_ERROR_TEXT("bad whence"));
+        case SEEK_SET:
+            break;
+        case SEEK_CUR:
+            pos += self->pos;
+            break;
+        case SEEK_END:
+            pos += self->len;
+            break;
+        default:
+            mp_raise_ValueError(MP_ERROR_TEXT("bad whence"));
     }
 
     if (pos < 0 || pos >= (mp_int_t)self->len) {
@@ -211,7 +211,7 @@ STATIC const mp_obj_type_t mp_module_ummap_mmap_type = {
     { &mp_type_type },
     .name = MP_QSTR_mmap,
     .make_new = mp_module_ummap_mmap_make_new,
-    .locals_dict = (mp_obj_dict_t*)&mp_module_ummap_mmap_locals_dict,
+    .locals_dict = (mp_obj_dict_t *)&mp_module_ummap_mmap_locals_dict,
 };
 
 STATIC const mp_rom_map_elem_t mp_module_ummap_globals_table[] = {
@@ -231,5 +231,5 @@ STATIC MP_DEFINE_CONST_DICT(mp_module_ummap_globals, mp_module_ummap_globals_tab
 
 const mp_obj_module_t mp_module_ummap = {
     .base = { &mp_type_module },
-    .globals = (mp_obj_dict_t*)&mp_module_ummap_globals,
+    .globals = (mp_obj_dict_t *)&mp_module_ummap_globals,
 };
