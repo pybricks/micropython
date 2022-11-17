@@ -82,7 +82,7 @@ STATIC int instance_count_native_bases(const mp_obj_type_t *type, const mp_obj_t
     }
 }
 
-// This wrapper function is allows a subclass of a native type to call the
+// This wrapper function allows a subclass of a native type to call the
 // __init__() method (corresponding to type->make_new) of the native type.
 STATIC mp_obj_t native_base_init_wrapper(size_t n_args, const mp_obj_t *args) {
     mp_obj_instance_t *self = MP_OBJ_TO_PTR(args[0]);

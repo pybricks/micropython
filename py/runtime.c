@@ -1111,7 +1111,12 @@ void mp_convert_member_lookup(mp_obj_t self, const mp_obj_type_t *type, mp_obj_t
                 #endif
                 else {
                     // Return a (built-in) bound method, with self being this object.
+                    #if MICROPY_BUILTIN_METHOD_CHECK_SELF_ARG
+                    // Ensures that self is not uninitialized object.
+                    dest[0] = mp_obj_new_checked_fun(type, member);
+                    #else 
                     dest[0] = member;
+                    #endif
                     dest[1] = self;
                 }
             } else {
