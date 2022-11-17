@@ -75,6 +75,9 @@ void mp_deinit(void);
 
 void mp_sched_exception(mp_obj_t exc);
 void mp_sched_keyboard_interrupt(void);
+#if MICROPY_ENABLE_SYSTEM_ABORT
+void mp_sched_system_exit_or_abort(bool abort);
+#endif
 void mp_handle_pending(bool raise_exc);
 void mp_handle_pending_tail(mp_uint_t atomic_state);
 
