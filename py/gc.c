@@ -158,6 +158,7 @@ STATIC void gc_setup_area(mp_state_mem_area_t *area, void *start, void *end) {
     #endif
 
     area->gc_last_free_atb_index = 0;
+    area->gc_high_watermark = 0;
 
     #if MICROPY_GC_SPLIT_HEAP
     area->next = NULL;
@@ -380,7 +381,14 @@ STATIC void gc_sweep(void) {
     // free unmarked heads and their tails
     int free_tail = 0;
     for (mp_state_mem_area_t *area = &MP_STATE_MEM(area); area != NULL; area = NEXT_AREA(area)) {
-        for (size_t block = 0; block < area->gc_alloc_table_byte_len * BLOCKS_PER_ATB; block++) {
+        size_t end_block = area->gc_alloc_table_byte_len * BLOCKS_PER_ATB;
+        if (area->gc_high_watermark < end_block) {
+            end_block = area->gc_high_watermark + 1;
+        }
+
+        size_t last_block = 0;
+
+        for (size_t block = 0; block < end_block; block++) {
             MICROPY_GC_HOOK_LOOP
             switch (ATB_GET_KIND(area, block)) {
                 case AT_HEAD:
@@ -421,14 +429,18 @@ STATIC void gc_sweep(void) {
                         memset((void *)PTR_FROM_BLOCK(area, block), 0, BYTES_PER_BLOCK);
                         #endif
                     }
+                    last_block = block;
                     break;
 
                 case AT_MARK:
                     ATB_MARK_TO_HEAD(area, block);
                     free_tail = 0;
+                    last_block = block;
                     break;
             }
         }
+
+        area->gc_high_watermark = last_block;
     }
 }
 
@@ -678,6 +690,10 @@ found:
         MP_STATE_MEM(gc_last_free_area) = area;
         #endif
         area->gc_last_free_atb_index = (i + 1) / BLOCKS_PER_ATB;
+    }
+
+    if (area->gc_high_watermark < end_block) {
+        area->gc_high_watermark = end_block;
     }
 
     // mark first block as used head
@@ -969,9 +985,14 @@ void *gc_realloc(void *ptr_in, size_t n_bytes, bool allow_move) {
     // check if we can expand in place
     if (new_blocks <= n_blocks + n_free) {
         // mark few more blocks as used tail
-        for (size_t bl = block + n_blocks; bl < block + new_blocks; bl++) {
+        size_t end_block = block + new_blocks;
+        for (size_t bl = block + n_blocks; bl < end_block; bl++) {
             assert(ATB_GET_KIND(area, bl) == AT_FREE);
             ATB_FREE_TO_TAIL(area, bl);
+        }
+
+        if (area->gc_high_watermark < end_block) {
+            area->gc_high_watermark = end_block;
         }
 
         GC_EXIT();
