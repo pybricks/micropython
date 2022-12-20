@@ -86,11 +86,20 @@ static mp_uint_t stdio_write(mp_obj_t self_in, const void *buf, mp_uint_t size, 
 }
 
 static mp_uint_t stdio_ioctl(mp_obj_t self_in, mp_uint_t request, uintptr_t arg, int *errcode) {
+    #if MICROPY_PY_SYS_STDIO_FLUSH
+    sys_stdio_obj_t *self = MP_OBJ_TO_PTR(self_in);
+    #else
     (void)self_in;
+    #endif
     if (request == MP_STREAM_POLL) {
         return mp_hal_stdio_poll(arg);
     } else if (request == MP_STREAM_CLOSE) {
         return 0;
+    #if MICROPY_PY_SYS_STDIO_FLUSH
+    } else if (request == MP_STREAM_FLUSH && self->fd == STDIO_FD_OUT) {
+        mp_hal_stdout_tx_flush();
+        return 0;
+    #endif
     } else {
         *errcode = MP_EINVAL;
         return MP_STREAM_ERROR;
@@ -106,6 +115,9 @@ static const mp_rom_map_elem_t stdio_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_readline), MP_ROM_PTR(&mp_stream_unbuffered_readline_obj)},
     { MP_ROM_QSTR(MP_QSTR_readlines), MP_ROM_PTR(&mp_stream_unbuffered_readlines_obj)},
     { MP_ROM_QSTR(MP_QSTR_write), MP_ROM_PTR(&mp_stream_write_obj) },
+    #if MICROPY_PY_SYS_STDIO_FLUSH
+    { MP_ROM_QSTR(MP_QSTR_flush), MP_ROM_PTR(&mp_stream_flush_obj) },
+    #endif
     { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&mp_identity_obj) },
     { MP_ROM_QSTR(MP_QSTR___enter__), MP_ROM_PTR(&mp_identity_obj) },
     { MP_ROM_QSTR(MP_QSTR___exit__), MP_ROM_PTR(&mp_stream___exit___obj) },
