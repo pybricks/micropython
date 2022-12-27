@@ -314,6 +314,8 @@ mp_obj_t mp_unary_op(mp_unary_op_t op, mp_obj_t arg) {
             if (result != MP_OBJ_NULL) {
                 return result;
             }
+        } else if (op == MP_UNARY_OP_HASH) {
+            return MP_OBJ_NEW_SMALL_INT((mp_uint_t)arg);
         }
         if (op == MP_UNARY_OP_BOOL) {
             // Type doesn't have unary_op (or didn't handle MP_UNARY_OP_BOOL),
