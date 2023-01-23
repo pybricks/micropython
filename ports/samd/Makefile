@@ -113,9 +113,9 @@ SRC_C += $(SRC_MOD)
 SRC_CXX += $(SRC_MOD_CXX)
 
 ifeq ($(MCU_SERIES),SAMD21)
-SRC_S = shared/runtime/gchelper_m0.s
+SRC_S = shared/runtime/gchelper_thumb1.s
 else
-SRC_S = shared/runtime/gchelper_m3.s
+SRC_S = shared/runtime/gchelper_thumb2.s
 endif
 
 # List of sources for qstr extraction

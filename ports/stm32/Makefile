@@ -332,12 +332,12 @@ endif
 ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),f0 g0 l0))
 SRC_O += \
 	resethandler_m0.o \
-	shared/runtime/gchelper_m0.o
+	shared/runtime/gchelper_thumb1.o
 else
 SRC_O += \
 	system_stm32.o \
 	resethandler.o \
-	shared/runtime/gchelper_m3.o
+	shared/runtime/gchelper_thumb2.o
 endif
 
 HAL_SRC_C += $(addprefix $(STM32LIB_HAL_BASE)/Src/stm32$(MCU_SERIES)xx_,\
