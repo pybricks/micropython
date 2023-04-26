@@ -262,9 +262,7 @@ STATIC qstr qstr_from_strn_helper(const char *str, size_t len, bool is_static) {
 
         // store the interned strings' data
         size_t hash = qstr_compute_hash((const byte *)str, len);
-        memcpy(q_ptr, str, len);
-        q_ptr[len] = '\0';
-        q = qstr_add(hash, len, q_ptr);
+        q = qstr_add(hash, len, str);
     }
     QSTR_EXIT();
     return q;
