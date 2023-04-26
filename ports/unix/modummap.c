@@ -207,12 +207,11 @@ STATIC const mp_rom_map_elem_t mp_module_ummap_mmap_locals_table[] = {
 };
 STATIC MP_DEFINE_CONST_DICT(mp_module_ummap_mmap_locals_dict, mp_module_ummap_mmap_locals_table);
 
-STATIC const mp_obj_type_t mp_module_ummap_mmap_type = {
-    { &mp_type_type },
-    .name = MP_QSTR_mmap,
-    .make_new = mp_module_ummap_mmap_make_new,
-    .locals_dict = (mp_obj_dict_t *)&mp_module_ummap_mmap_locals_dict,
-};
+STATIC MP_DEFINE_CONST_OBJ_TYPE(mp_module_ummap_mmap_type,
+    MP_QSTR_mmap,
+    MP_TYPE_FLAG_NONE,
+    make_new, mp_module_ummap_mmap_make_new,
+    locals_dict, &mp_module_ummap_mmap_locals_dict);
 
 STATIC const mp_rom_map_elem_t mp_module_ummap_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_mmap) },
