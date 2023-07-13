@@ -47,6 +47,14 @@ mp_uint_t mp_verbose_flag = 0;
 // Make it larger on a 64 bit machine, because pointers are larger.
 long heap_size = 1024 * 1024 * (sizeof(mp_uint_t) / 4);
 
+STATIC void stdout_print_strn(void *env, const char *str, size_t len) {
+    (void)env;
+    ssize_t dummy = write(STDOUT_FILENO, str, len);
+    (void)dummy;
+}
+
+STATIC const mp_print_t mp_stdout_print = {NULL, stdout_print_strn};
+
 STATIC void stderr_print_strn(void *env, const char *str, size_t len) {
     (void)env;
     ssize_t dummy = write(STDERR_FILENO, str, len);
@@ -58,7 +66,12 @@ STATIC const mp_print_t mp_stderr_print = {NULL, stderr_print_strn};
 STATIC int compile_and_save(const char *file, const char *output_file, const char *source_file) {
     nlr_buf_t nlr;
     if (nlr_push(&nlr) == 0) {
-        mp_lexer_t *lex = mp_lexer_new_from_file(file);
+        mp_lexer_t *lex;
+        if (strcmp(file, "-") == 0) {
+            lex = mp_lexer_new_from_fd(MP_QSTR__lt_stdin_gt_, STDIN_FILENO, false);
+        } else {
+            lex = mp_lexer_new_from_file(file);
+        }
 
         qstr source_name;
         if (source_file == NULL) {
@@ -74,17 +87,22 @@ STATIC int compile_and_save(const char *file, const char *output_file, const cha
         mp_parse_tree_t parse_tree = mp_parse(lex, MP_PARSE_FILE_INPUT);
         mp_raw_code_t *rc = mp_compile_to_raw_code(&parse_tree, source_name, false);
 
-        vstr_t vstr;
-        vstr_init(&vstr, 16);
-        if (output_file == NULL) {
-            vstr_add_str(&vstr, file);
-            vstr_cut_tail_bytes(&vstr, 2);
-            vstr_add_str(&vstr, "mpy");
+        if (output_file != NULL && strcmp(output_file, "-") == 0) {
+            mp_raw_code_save(rc, (mp_print_t *)&mp_stdout_print);
         } else {
-            vstr_add_str(&vstr, output_file);
+            vstr_t vstr;
+            vstr_init(&vstr, 16);
+            if (output_file == NULL) {
+                vstr_add_str(&vstr, file);
+                vstr_cut_tail_bytes(&vstr, 2);
+                vstr_add_str(&vstr, "mpy");
+            } else {
+                vstr_add_str(&vstr, output_file);
+            }
+
+            mp_raw_code_save_file(rc, vstr_null_terminated_str(&vstr));
+            vstr_clear(&vstr);
         }
-        mp_raw_code_save_file(rc, vstr_null_terminated_str(&vstr));
-        vstr_clear(&vstr);
 
         nlr_pop();
         return 0;
