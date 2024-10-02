@@ -631,7 +631,7 @@ void *gc_alloc(size_t n_bytes, unsigned int alloc_flags) {
         for (; area != NULL; area = NEXT_AREA(area), i = 0) {
             n_free = 0;
             for (i = area->gc_last_free_atb_index; i < area->gc_alloc_table_byte_len; i++) {
-                MICROPY_GC_HOOK_LOOP(i);
+                MICROPY_GC_HOOK_LOOP(i - area->gc_last_free_atb_index);
                 byte a = area->gc_alloc_table_start[i];
                 // *FORMAT-OFF*
                 if (ATB_0_IS_FREE(a)) { if (++n_free >= n_blocks) { i = i * BLOCKS_PER_ATB + 0; goto found; } } else { n_free = 0; }
