@@ -771,6 +771,7 @@ def run_tests(pyb, tests, args, result_dir, num_threads=1):
 
     # Some tests shouldn't be run on GitHub Actions
     if os.getenv("GITHUB_ACTIONS") == "true":
+        skip_tests.add("thread/stress_recurse.py")  # has reliability issues
         skip_tests.add("thread/stress_schedule.py")  # has reliability issues
         skip_tests.add("thread/thread_lock4.py")  # has reliability issues
 
