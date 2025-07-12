@@ -254,6 +254,10 @@ MP_DEFINE_CONST_FUN_OBJ_1(mp_sys_settrace_obj, mp_sys_settrace);
 #error "MICROPY_PY_SYS_TRACEBACKLIMIT requires MICROPY_PY_SYS_ATTR_DELEGATION"
 #endif
 
+#if MICROPY_PY_SYS_MUTABLE_STDIO && !MICROPY_PY_SYS_ATTR_DELEGATION
+#error "MICROPY_PY_SYS_MUTABLE_STDIO requires MICROPY_PY_SYS_ATTR_DELEGATION"
+#endif
+
 #if MICROPY_PY_SYS_ATTR_DELEGATION && !MICROPY_MODULE_ATTR_DELEGATION
 #error "MICROPY_PY_SYS_ATTR_DELEGATION requires MICROPY_MODULE_ATTR_DELEGATION"
 #endif
@@ -272,6 +276,11 @@ static const uint16_t sys_mutable_keys[] = {
     #endif
     #if MICROPY_PY_SYS_TRACEBACKLIMIT
     MP_QSTR_tracebacklimit,
+    #endif
+    #if MICROPY_PY_SYS_MUTABLE_STDIO
+    MP_QSTR_stdin,
+    MP_QSTR_stdout,
+    MP_QSTR_stderr,
     #endif
     MP_QSTRnull,
 };

@@ -1583,6 +1583,13 @@ typedef double mp_float_t;
 #define MICROPY_PY_SYS_TRACEBACKLIMIT (MICROPY_CONFIG_ROM_LEVEL_AT_LEAST_EVERYTHING)
 #endif
 
+// Whether sys.{stdin,stdout,stderr} are mutable (i.e. can be reassigned).
+// When opting in to this feature, the port must set up the initial
+// sys.std{in,out,err} objects manually.
+#ifndef MICROPY_PY_SYS_MUTABLE_STDIO
+#define MICROPY_PY_SYS_MUTABLE_STDIO (0)
+#endif
+
 // Whether the sys module supports attribute delegation
 // This is enabled automatically when needed by other features
 #ifndef MICROPY_PY_SYS_ATTR_DELEGATION
