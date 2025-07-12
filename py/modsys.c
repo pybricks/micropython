@@ -46,10 +46,12 @@
 
 #if MICROPY_PY_SYS
 
+#if MICROPY_PY_SYS_STDFILES
 // defined per port; type of these is irrelevant, just need pointer
 extern struct _mp_dummy_t mp_sys_stdin_obj;
 extern struct _mp_dummy_t mp_sys_stdout_obj;
 extern struct _mp_dummy_t mp_sys_stderr_obj;
+#endif
 
 #if MICROPY_PY_IO && MICROPY_PY_SYS_STDFILES
 const mp_print_t mp_sys_stdout_print = {&mp_sys_stdout_obj, mp_stream_write_adaptor};

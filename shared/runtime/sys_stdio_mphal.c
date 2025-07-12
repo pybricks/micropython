@@ -39,6 +39,8 @@
 /******************************************************************************/
 // MicroPython bindings
 
+#if MICROPY_PY_SYS_STDFILES
+
 #define STDIO_FD_IN  (0)
 #define STDIO_FD_OUT (1)
 #define STDIO_FD_ERR (2)
@@ -174,4 +176,6 @@ static MP_DEFINE_CONST_OBJ_TYPE(
     );
 
 static const sys_stdio_obj_t stdio_buffer_obj = {{&stdio_buffer_obj_type}, .fd = 0}; // fd unused
-#endif
+#endif // MICROPY_PY_SYS_STDIO_BUFFER
+
+#endif // MICROPY_PY_SYS_STDFILES
