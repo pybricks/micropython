@@ -528,6 +528,7 @@ int mp_vprintf(const mp_print_t *print, const char *fmt, va_list args) {
                 break;
             }
             case 'd':
+            case 'i':
             case 'p':
             case 'P':
             case 'u':
