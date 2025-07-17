@@ -506,7 +506,8 @@ int mp_vprintf(const mp_print_t *print, const char *fmt, va_list args) {
                 chrs += mp_print_strn(print, str, len, flags, fill, width);
                 break;
             }
-            case 'd': {
+            case 'd':
+            case 'i': {
                 mp_int_t val;
                 if (long_arg) {
                     val = va_arg(args, long int);
