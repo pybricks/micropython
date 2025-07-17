@@ -528,12 +528,16 @@ int mp_vprintf(const mp_print_t *print, const char *fmt, va_list args) {
                 break;
             }
             case 'd':
+            case 'i':
             case 'p':
             case 'P':
             case 'u':
             case 'x':
             case 'X': {
                 char fmt_chr = *fmt;
+                if (fmt_chr == 'i') {
+                    fmt_chr = 'd';
+                }
                 mp_uint_t val;
                 if (fmt_chr == 'p' || fmt_chr == 'P') {
                     val = va_arg(args, uintptr_t);
