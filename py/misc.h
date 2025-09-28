@@ -52,6 +52,9 @@ typedef unsigned int uint;
 
 // Static assertion macro
 #define MP_STATIC_ASSERT(cond) ((void)sizeof(char[1 - 2 * !(cond)]))
+#if __clang__
+#pragma GCC diagnostic ignored "-Wgnu-folding-constant"
+#endif
 #if defined(_MSC_VER)
 #define MP_STATIC_ASSERT_NOT_MSC(cond) (1)
 #else
