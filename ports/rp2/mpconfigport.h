@@ -85,6 +85,8 @@
 #define MICROPY_HW_ENABLE_PSRAM (0)
 #endif
 
+#define MICROPY_RP2_FLASH                     (!PICO_NO_FLASH)
+
 // Memory allocation policies
 #if MICROPY_HW_ENABLE_PSRAM
 #define MICROPY_GC_STACK_ENTRY_TYPE             uint32_t
@@ -118,7 +120,7 @@
 
 // Python internal features
 #define MICROPY_TRACKED_ALLOC                   (MICROPY_SSL_MBEDTLS || MICROPY_BLUETOOTH_BTSTACK)
-#define MICROPY_READER_VFS                      (1)
+#define MICROPY_READER_VFS                      (0)
 #define MICROPY_ENABLE_GC                       (1)
 #define MICROPY_STACK_CHECK_MARGIN              (256)
 #define MICROPY_ENABLE_EMERGENCY_EXCEPTION_BUF  (1)
@@ -159,14 +161,14 @@
 #define MICROPY_PY_MACHINE_INCLUDEFILE          "ports/rp2/modmachine.c"
 #define MICROPY_PY_MACHINE_RESET                (1)
 #define MICROPY_PY_MACHINE_BARE_METAL_FUNCS     (1)
-#define MICROPY_PY_MACHINE_BOOTLOADER           (1)
+#define MICROPY_PY_MACHINE_BOOTLOADER           (0)
 #define MICROPY_PY_MACHINE_DISABLE_IRQ_ENABLE_IRQ (1)
 #define MICROPY_PY_MACHINE_ADC                  (1)
 #define MICROPY_PY_MACHINE_ADC_INCLUDEFILE      "ports/rp2/machine_adc.c"
 #define MICROPY_PY_MACHINE_PIN_MAKE_NEW         mp_pin_make_new
-#define MICROPY_PY_MACHINE_BITSTREAM            (1)
-#define MICROPY_PY_MACHINE_DHT_READINTO         (1)
-#define MICROPY_PY_MACHINE_PULSE                (1)
+#define MICROPY_PY_MACHINE_BITSTREAM            (0)
+#define MICROPY_PY_MACHINE_DHT_READINTO         (0)
+#define MICROPY_PY_MACHINE_PULSE                (0)
 #define MICROPY_PY_MACHINE_PWM                  (1)
 #define MICROPY_PY_MACHINE_PWM_INCLUDEFILE      "ports/rp2/machine_pwm.c"
 #define MICROPY_PY_MACHINE_I2C                  (1)
@@ -177,7 +179,7 @@
 #define MICROPY_PY_MACHINE_I2C_TARGET_HARD_IRQ  (1)
 #endif
 #define MICROPY_PY_MACHINE_SOFTI2C              (1)
-#define MICROPY_PY_MACHINE_I2S                  (1)
+#define MICROPY_PY_MACHINE_I2S                  (0)
 #define MICROPY_PY_MACHINE_I2S_INCLUDEFILE      "ports/rp2/machine_i2s.c"
 #define MICROPY_PY_MACHINE_I2S_CONSTANT_RX      (RX)
 #define MICROPY_PY_MACHINE_I2S_CONSTANT_TX      (TX)
@@ -185,7 +187,7 @@
 #define MICROPY_PY_MACHINE_SPI                  (1)
 #define MICROPY_PY_MACHINE_SPI_MSB              (SPI_MSB_FIRST)
 #define MICROPY_PY_MACHINE_SPI_LSB              (SPI_LSB_FIRST)
-#define MICROPY_PY_MACHINE_SOFTSPI              (1)
+#define MICROPY_PY_MACHINE_SOFTSPI              (0)
 #define MICROPY_PY_MACHINE_UART                 (1)
 #define MICROPY_PY_MACHINE_UART_INCLUDEFILE     "ports/rp2/machine_uart.c"
 #define MICROPY_PY_MACHINE_UART_SENDBREAK       (1)
@@ -193,12 +195,12 @@
 #define MICROPY_PY_MACHINE_WDT                  (1)
 #define MICROPY_PY_MACHINE_WDT_INCLUDEFILE      "ports/rp2/machine_wdt.c"
 #define MICROPY_PY_MACHINE_FREQ_NUM_ARGS_MAX    (2)
-#define MICROPY_PY_ONEWIRE                      (1)
-#define MICROPY_VFS                             (1)
-#define MICROPY_VFS_LFS2                        (1)
-#define MICROPY_VFS_FAT                         (1)
+#define MICROPY_PY_ONEWIRE                      (0)
+#define MICROPY_VFS                             (0)
+#define MICROPY_VFS_LFS2                        (0)
+#define MICROPY_VFS_FAT                         (0)
 #define MICROPY_VFS_ROM                         (MICROPY_HW_ROMFS_BYTES > 0)
-#define MICROPY_SSL_MBEDTLS                     (1)
+#define MICROPY_SSL_MBEDTLS                     (0)
 #define MICROPY_PY_LWIP_PPP                     (MICROPY_PY_NETWORK_PPP_LWIP)
 #define MICROPY_PY_LWIP_SOCK_RAW                (MICROPY_PY_LWIP)
 

@@ -1,0 +1,12 @@
+# cmake file for Raspberry Pi Build HAT
+
+set(PICO_BOARD rpi_build_hat)
+set(PICO_PLATFORM rp2040)
+set(PICO_BOARD_HEADER_DIRS ${MICROPY_PORT_DIR}/boards/${MICROPY_BOARD})
+
+set(PICO_NO_FLASH ON)
+set(MICROPY_BOARD_LINKER_SCRIPT ${CMAKE_CURRENT_LIST_DIR}/rpi_build_hat.ld)
+
+set(MICROPY_SOURCE_BOARD
+    ${MICROPY_BOARD_DIR}/board.c
+)

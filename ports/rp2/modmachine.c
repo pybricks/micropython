@@ -97,9 +97,11 @@ static mp_obj_t mp_machine_get_freq(void) {
 static void mp_machine_set_freq(size_t n_args, const mp_obj_t *args) {
     mp_int_t freq = mp_obj_get_int(args[0]);
 
+    #if MICROPY_RP2_FLASH
     // If necessary, increase the flash divider before increasing the clock speed
     const int old_freq = clock_get_hz(clk_sys);
     rp2_flash_set_timing_for_freq(MAX(freq, old_freq));
+    #endif
 
     if (!set_sys_clock_khz(freq / 1000, false)) {
         mp_raise_ValueError(MP_ERROR_TEXT("cannot change frequency"));
@@ -119,10 +121,12 @@ static void mp_machine_set_freq(size_t n_args, const mp_obj_t *args) {
         }
     }
 
+    #if MICROPY_RP2_FLASH
     // If clock speed was reduced, maybe we can reduce the flash divider
     if (freq < old_freq) {
         rp2_flash_set_timing_for_freq(freq);
     }
+    #endif
 
     #if MICROPY_HW_ENABLE_UART_REPL
     setup_default_uart();

@@ -97,7 +97,9 @@ int main(int argc, char **argv) {
     MICROPY_BOARD_STARTUP();
 
     // Set the flash divisor to an appropriate value
+    #if MICROPY_RP2_FLASH
     rp2_flash_set_timing();
+    #endif
 
     #if MICROPY_HW_ENABLE_PSRAM
     size_t psram_size = psram_init(MICROPY_HW_PSRAM_CS_PIN);

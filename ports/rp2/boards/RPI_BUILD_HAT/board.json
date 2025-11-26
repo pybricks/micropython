@@ -1,0 +1,17 @@
+{
+    "deploy": [
+        "../deploy-build-hat.md"
+    ],
+    "docs": "",
+    "features": [
+        "Dual-core"
+    ],
+    "images": [
+        "rpi-build-hat.jpg"
+    ],
+    "mcu": "rp2040",
+    "product": "Build HAT",
+    "thumbnail": "",
+    "url": "https://www.raspberrypi.com/products/build-hat/",
+    "vendor": "Raspberry Pi"
+}

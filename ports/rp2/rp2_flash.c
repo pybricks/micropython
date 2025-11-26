@@ -24,6 +24,10 @@
  * THE SOFTWARE.
  */
 
+#include "py/mpconfig.h"
+
+#if MICROPY_RP2_FLASH
+
 #include <string.h>
 
 #include "py/mphal.h"
@@ -406,3 +410,5 @@ void rp2_flash_set_timing_for_freq(int clock_hz) {
 void rp2_flash_set_timing(void) {
     rp2_flash_set_timing_for_freq(clock_get_hz(clk_sys));
 }
+
+#endif // MICROPY_RP2_FLASH
